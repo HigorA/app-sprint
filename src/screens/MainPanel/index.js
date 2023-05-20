@@ -1,9 +1,14 @@
-import { Image, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import { useEffect } from "react";
+import { Image, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function MainPanel() {
+export default function MainPanel({ navigation }) {
+
+    const openDrawer = () => {
+        navigation.openDrawer();
+    };
+
 
     useEffect(() => {
         Font.loadAsync({
@@ -17,7 +22,9 @@ export default function MainPanel() {
         <SafeAreaView style={styles.container}>
             <View style={[styles.aView, {marginTop: 0}]}>
                 <Text style={styles.title}>Login</Text>
-                <Feather name="menu" size={24} color="black" style={{paddingRight: 8}} />
+                <Pressable onPress={() => openDrawer()} >
+                    <Feather name="menu" size={24} color="black" style={{paddingRight: 8}} />
+                </Pressable>
             </View>
 
             <View style={styles.aView}>

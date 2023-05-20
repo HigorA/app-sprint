@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useState } from "react";
 import { Alert, ImageBackground, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
@@ -24,6 +25,10 @@ export default function Home({ navigation }) {
         navigation.navigate('SignUp')
     }
 
+    const openDrawer = () => {
+        navigation.openDrawer();
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <ImageBackground 
@@ -38,12 +43,16 @@ export default function Home({ navigation }) {
                         height: '100%',}}
                 >
                 <View style={{backgroundColor: 'rgba(0,0,0, 0.5)', justifyContent: 'center', alignItems: 'center', gap: 30, width: '100%', height: '100%'}}>
+                    <Pressable onPress={() => openDrawer()} >
+                        <Feather name="menu" size={26} color="white" style={{ position: 'absolute', top: -40, left: 180 }} />
+                    </Pressable>
                     <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold', }}>Welcome</Text>
                     <Text style={{color: 'white', fontSize: 22, textAlign: 'center', paddingHorizontal: 30, }}>By signing, you are agreeing with our 
                         <Text style={{color: '#036BB9'}} onPress={() => Alert.alert('Recurso não disponivel')}> terms and policy</Text>
                     </Text>
                 </View>
             </ImageBackground>
+    
             <View style={[styles.utilArea]}>
                 <View style={styles.headerButton}>
                     <Pressable onPress={() => handleSignIn()} style={[styles.button, showSignIn && styles.activeButton]}>
