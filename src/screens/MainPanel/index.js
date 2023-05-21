@@ -36,6 +36,7 @@ export default function MainPanel({ navigation }) {
     const [toastMessage, setToastMessage] = useState(null);
     const [recording, setRecording] = useState(null);
     const [description, setDescription] = useState('');
+    const [isRecording, setIsRecording] = useState(false);
 
     const openDrawer = () => {
         navigation.openDrawer();
@@ -69,6 +70,7 @@ export default function MainPanel({ navigation }) {
 
         if ( granted ) {
             try {
+                setIsRecording(true);
                 setToastMessage('Gravando...')
 
                 const { recording } = await Audio.Recording.createAsync(RECORDING_OPTIONS);
@@ -89,7 +91,7 @@ export default function MainPanel({ navigation }) {
             if (recordingFileUri) {
                 const base64File = await FileSystem.readAsStringAsync(recordingFileUri, { encoding: FileSystem?.EncodingType?.Base64 });
                 
-                
+                setIsRecording(false);
                 setRecording(null);
                 getTranscription(base64File);
                 await FileSystem.deleteAsync(recordingFileUri);
@@ -137,7 +139,7 @@ export default function MainPanel({ navigation }) {
 
             <View style={[styles.aView, styles.searchView]}>
                 <TextInput placeholder="Search here..." style={styles.searchField} />
-                <Pressable style={styles.voiceButton} 
+                <Pressable style={isRecording ? styles.activeVoiceButton : styles.inactiveVoiceButton}
                     onPressIn={handleRecordingStart}
                     onPressOut={handleRecordingStop}
                 >
@@ -237,12 +239,24 @@ const styles = StyleSheet.create({
         color: 'white'
     },
 
-    voiceButton: {
+    inactiveVoiceButton: {
         borderTopRightRadius: 8,
         borderBottomRightRadius: 8,
         borderWidth: 1, 
         borderColor: 'none', 
-        backgroundColor: '#475569',
+        backgroundColor: 'rgba(71, 85, 105, 1)',
+        height: 60,
+        width: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    activeVoiceButton: {
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+        borderWidth: 1, 
+        borderColor: 'none', 
+        backgroundColor: 'rgba(71, 85, 105, 0.5)',
         height: 60,
         width: 60,
         justifyContent: 'center',
