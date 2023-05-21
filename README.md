@@ -7,6 +7,10 @@ git clone https://github.com/HigorA/app-sprint.git
 ```
 
 ```sh
+cd app-sprint
+```
+
+```sh
 npm ci
 ```
 
