@@ -29,6 +29,7 @@ export default function Home({ navigation }) {
         navigation.openDrawer();
     };
 
+
     return (
         <SafeAreaView style={styles.container}>
             <ImageBackground 

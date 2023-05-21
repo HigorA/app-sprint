@@ -1,22 +1,130 @@
 import { Feather } from '@expo/vector-icons';
-import * as Font from 'expo-font';
-import { useEffect } from "react";
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
+import { useEffect, useState } from "react";
 import { Image, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import * as Speech from 'expo-speech';
+
+
+const RECORDING_OPTIONS = {
+    android: {
+        extension: '.mp3',
+        outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+        audioEncoder: Audio.AndroidAudioEncoder.AAC,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+    },
+    ios: {
+        extension: '.wav',
+        audioQuality: Audio.IOSAudioQuality.HIGH,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+    },
+    web: {
+  
+    }
+};
 
 export default function MainPanel({ navigation }) {
+
+    const [isConvertingSTT, setIsConvertingSTT] = useState(false);
+    const [toastMessage, setToastMessage] = useState(null);
+    const [recording, setRecording] = useState(null);
+    const [description, setDescription] = useState('');
 
     const openDrawer = () => {
         navigation.openDrawer();
     };
 
-
     useEffect(() => {
-        Font.loadAsync({
-            'MontserratRegular': require('./../../../assets/Montserrat/static/Montserrat-Regular.ttf'),
-            'MontserratBold': require('./../../../assets/Montserrat/static/Montserrat-Bold.ttf'),
-            'TitilliumSemiBold': require('./../../../assets/Titillium_Web/TitilliumWeb-SemiBold.ttf'),
-        })
+        Audio
+          .requestPermissionsAsync()
+          .then((granted) => {
+            if (granted) {
+                Audio.setAudioModeAsync({
+                    allowsRecordingIOS: true,
+                    interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+                    playsInSilentModeIOS: true,
+                    shouldDuckAndroid: true,
+                    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+                    playThroughEarpieceAndroid: true,
+              });
+            }
+        });
+        
     }, []);
+
+    const speak = () => {
+        const thingsToSay = 'Ainda não posso fazer pesquisas. Sinto Muito!'
+        Speech.speak(thingsToSay);
+    }
+
+    async function handleRecordingStart() {
+        const { granted } = await Audio.getPermissionsAsync();
+
+        if ( granted ) {
+            try {
+                setToastMessage('Gravando...')
+
+                const { recording } = await Audio.Recording.createAsync(RECORDING_OPTIONS);
+                setRecording(recording);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    async function handleRecordingStop() {
+        try {
+            setToastMessage(null);
+
+            await recording.stopAndUnloadAsync();
+            const recordingFileUri = recording.getURI();
+            
+            if (recordingFileUri) {
+                const base64File = await FileSystem.readAsStringAsync(recordingFileUri, { encoding: FileSystem?.EncodingType?.Base64 });
+                
+                
+                setRecording(null);
+                getTranscription(base64File);
+                await FileSystem.deleteAsync(recordingFileUri);
+            } else {
+                Alert.alert("Audio", "Não foi possível obter a gravação.");
+            }
+        } catch (error) {
+                console.log(error);
+        }
+    }
+
+    function getTranscription(base64File) {
+        setIsConvertingSTT(true);
+    
+        fetch(`https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyBEtY_UZuWZlmNa4rKlT1KDENEwgdHdGk4`, {
+          method: 'POST',
+          body: JSON.stringify({
+            config: {
+                languageCode: "pt-BR",
+                encoding: "WEBM_OPUS",
+                sampleRateHertz: 48000,
+            },
+            audio: {
+              content: base64File
+            }
+          })
+        })
+        .then(response => response.json())
+        .then((data) => {
+            console.log(data.results[0].alternatives[0].transcript);
+            speak()
+        })
+        .catch((error) => console.log(error))
+        .finally(() => setIsConvertingSTT(false))
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -27,9 +135,14 @@ export default function MainPanel({ navigation }) {
                 </Pressable>
             </View>
 
-            <View style={styles.aView}>
+            <View style={[styles.aView, styles.searchView]}>
                 <TextInput placeholder="Search here..." style={styles.searchField} />
-                <Pressable style={styles.voiceButton} ><Feather name="mic" size={20} color="white" /></Pressable>
+                <Pressable style={styles.voiceButton} 
+                    onPressIn={handleRecordingStart}
+                    onPressOut={handleRecordingStop}
+                >
+                    <Feather name="mic" size={24} color="white" />
+                </Pressable>
             </View>
 
             <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', height: 250}}>
@@ -109,13 +222,19 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
 
+    searchView: {
+        justifyContent: 'center'
+    },
+
     searchField: {
         width: '90%',
-        backgroundColor: '#EEE5D4',
+        height: 60,
+        backgroundColor: '#94A3B8',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderTopLeftRadius: 8,
-        borderBottomLeftRadius: 8
+        borderBottomLeftRadius: 8,
+        color: 'white'
     },
 
     voiceButton: {
@@ -124,8 +243,8 @@ const styles = StyleSheet.create({
         borderWidth: 1, 
         borderColor: 'none', 
         backgroundColor: '#475569',
-        height: '100%',
-        width: '10%',
+        height: 60,
+        width: 60,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -147,13 +266,11 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontFamily: 'TitilliumSemiBold',
         fontSize: 16,
         color: '#334155'
     },
 
     commonText: {
-        fontFamily: 'MontserratRegular',
         fontSize: 14,
     }
 });
