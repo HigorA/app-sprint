@@ -3,6 +3,10 @@
 <h2>Para usar</h2>
 <code>git clone https://github.com/HigorA/app-sprint.git</code><br/>
 <code>npm ci</code>
+```sh
+wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+sh install.sh
+```
 <h2>Diferenças para a Sprint 1</h2>
 <p>O que mudou da sprint atual para a sprint passada foi que não iremos treinar o chatGPT com uma base de dados, já que isso acabou se mostrando impossivel, existe outras IAs que podem ser treinadas, mas não o chatGPT.</p>
 
