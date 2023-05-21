@@ -45,7 +45,7 @@ export default function Home({ navigation }) {
                 >
                 <View style={{backgroundColor: 'rgba(0,0,0, 0.5)', justifyContent: 'center', alignItems: 'center', gap: 30, width: '100%', height: '100%'}}>
                     <Pressable onPress={() => openDrawer()} >
-                        <Feather name="menu" size={26} color="white" style={{ position: 'absolute', top: -40, left: 180 }} />
+                        <Feather name="menu" size={26} color="white" style={{ position: 'absolute', top: -40, left: 150 }} />
                     </Pressable>
                     <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold', }}>Welcome</Text>
                     <Text style={{color: 'white', fontSize: 22, textAlign: 'center', paddingHorizontal: 30, }}>By signing, you are agreeing with our 

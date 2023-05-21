@@ -59,8 +59,8 @@ export default function MainPanel({ navigation }) {
         
     }, []);
 
-    const speak = () => {
-        const thingsToSay = 'Ainda não posso fazer pesquisas. Sinto Muito!'
+    const speak = (termo) => {
+        const thingsToSay = `Você quer pesquisar por ${termo}, entretanto, ainda não posso fazer pesquisas. Sinto Muito!`
         Speech.speak(thingsToSay);
     }
 
@@ -120,7 +120,7 @@ export default function MainPanel({ navigation }) {
         .then(response => response.json())
         .then((data) => {
             console.log(data.results[0].alternatives[0].transcript);
-            speak()
+            speak(data.results[0].alternatives[0].transcript)
         })
         .catch((error) => console.log(error))
         .finally(() => setIsConvertingSTT(false))

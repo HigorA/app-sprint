@@ -2,7 +2,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Home from './src/screens/Home';
 import MainPanel from './src/screens/MainPanel';
-import Teste from './src/screens/Teste';
 
 const Drawer = createDrawerNavigator();
 
