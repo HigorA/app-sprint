@@ -14,6 +14,10 @@ cd app-sprint
 npm ci
 ```
 
+```sh
+npx expo start
+```
+
 
 <h2>Diferenças para a Sprint 1</h2>
 <p>O que mudou da sprint atual para a sprint passada foi que não iremos treinar o chatGPT com uma base de dados, já que isso acabou se mostrando impossivel, existe outras IAs que podem ser treinadas, mas não o chatGPT.</p>
