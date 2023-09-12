@@ -130,7 +130,7 @@ export default function MainPanel({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.aView, {marginTop: 0}]}>
+            <View style={[styles.aView, {marginTop: 80}]}>
                 <Text style={styles.title}>Login</Text>
                 <Pressable onPress={() => openDrawer()} >
                     <Feather name="menu" size={24} color="black" style={{paddingRight: 8}} />
